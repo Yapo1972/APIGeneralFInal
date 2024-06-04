@@ -4,45 +4,7 @@ using System.Reflection.Metadata.Ecma335;
 namespace UtilesGenerales
 {
 
-    public class VMDatosClientes
-    {
-        public string idcliente { get; set; }
-        public string nombrecliente { get; set; }
-        public string codigo { get; set; }
-        public string direccion { get; set; }
-        public string nombredirector { get; set; }
-        public string correoelectronico { get; set; }
-        public string telefono { get; set; }
-        public string contactocomercial { get; set; }
-
-        public string cargo { get; set; }
-        public string telefonocontacto { get; set; }
-        public string correocontacto { get; set; }
-        public string cuentacup { get; set; }
-        public string banco { get; set; }
-        public string sucursal { get; set; }
-        public string direccionbanco { get; set; }
-        public string nrocuentacl { get; set; }
-        public string titularcuentacl { get; set; }
-        public string bancocl { get; set; }
-        public string   sucursalcl { get; set; }
-        public string direccionbancocl { get; set; }
-        public string idorganismo { get; set; }
-    }
-
-    public class ConexionSql
-    {
-        private readonly Dictionary<string, string> _cadenaConexion = new Dictionary<string, string> {
-            {"AccesoDatos", "data source=server-assets;initial catalog=AccesoDatos;user id=user_assetsp;password=Super2009" }
-        };
-        private string cadenaConexion { get; set; }
-        public ConexionSql(string _conex)
-        {
-            cadenaConexion = _cadenaConexion[_conex];
-        }
-        public string obtener() => cadenaConexion;
-    }
-
+  
     public static  class DatosTecnicos
     {
         public static List<string> obtenerTodosDatosTecnicos( string comienzaPor)
@@ -56,11 +18,60 @@ namespace UtilesGenerales
 
         }
 
-        public static bool introducirNuevoCliente( VMDatosClientes cliente)
-        {
+ 
 
+    }
+
+    public static class OperacionesClientes
+    {
+        public static bool introducirNuevoCliente(VMDatosClientes cliente)
+        {
+            var resultado = true;
+            var cadConexion = new ConexionSql("CORPORATIVO");
+            var sql = $"insert into Cliente (Id_Cliente,Desc_Cliente,Nombre_Contacto,Cargo_Contacto,Direccion,Telefono,Id_Organismo,E_mail,Id_Clasifactura,NoSucursal,NoCtas,Moneda_Factura,NoCtasMC,Fecha_Entrada) " +
+                                    $"VALUES ('{cliente.idcliente}','{cliente.nombrecliente}','{cliente.contactocomercial}','{cliente.cargo}','{cliente.direccion}','{cliente.telefono}','{cliente.idorganismo}','{cliente.correoelectronico}'," +
+                                    $"'{cliente.idclasificacionfactura}','{cliente.sucursal}','{cliente.cuentacup}','{cliente.monedafactura}','{cliente.nrocuentacl}','{DateTime.Now.ToString("yyyy-MM-dd")}' )";
+            using (var conn = new SqlConnection(cadConexion.obtener()))
+                conn.Execute(sql);
+            return resultado;
         }
 
+        public static List<VMDatosOrganismo> obtenerOrganismos()
+        {
+
+            var resultado = new List<VMDatosOrganismo>();
+            var cadConexion = new ConexionSql("AccesoDatos");
+            using (var conn = new SqlConnection(cadConexion.obtener()))
+                resultado = conn.Query<VMDatosOrganismo>("pr_listaOrganismos", null, commandType: System.Data.CommandType.StoredProcedure).AsList();
+            return resultado;
+        }
+       public static List<VMMonedas> obtenerMonedas()
+        {
+
+            var resultado = new List<VMMonedas>();
+            var cadConexion = new ConexionSql("AccesoDatos");
+            using (var conn = new SqlConnection(cadConexion.obtener()))
+                resultado = conn.Query<VMMonedas>("pr_listaMonedas", null, commandType: System.Data.CommandType.StoredProcedure).AsList();
+            return resultado;
+        }
+       public static List<VMClasificacionFacturas> obtenerClasificacionFacturas()
+        {
+
+            var resultado = new List<VMClasificacionFacturas>();
+            var cadConexion = new ConexionSql("AccesoDatos");
+            using (var conn = new SqlConnection(cadConexion.obtener()))
+                resultado = conn.Query<VMClasificacionFacturas>("pr_listaClasificacion", null, commandType: System.Data.CommandType.StoredProcedure).AsList();
+            return resultado;
+        }
+       public static bool existeCliente( string idcliente )
+        {
+
+            var resultado = true;
+            var cadConexion = new ConexionSql("AccesoDatos");
+            using (var conn = new SqlConnection(cadConexion.obtener()))
+                resultado = conn.Query("pr_existeCliente", new { idcliente }, commandType: System.Data.CommandType.StoredProcedure).AsList().Count >  0;
+            return resultado;
+        }
 
     }
 }

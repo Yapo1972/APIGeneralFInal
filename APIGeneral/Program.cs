@@ -152,6 +152,14 @@ public static class Configurador
         {
             return UtilesGenerales.DatosTecnicos.obtenerTodosDatosTecnicos(comienzaPor);
         });
+        app.MapPost("/clientes/agregar", ([FromForm] VMDatosClientes cliente) =>
+        {
+            return UtilesGenerales.OperacionesClientes.introducirNuevoCliente(cliente);
+        }).DisableAntiforgery();
+
+        app.MapGet("/clientes/monedas", () => { return UtilesGenerales.OperacionesClientes.obtenerMonedas(); });
+        app.MapGet("/clientes/clasificacion", () => { return UtilesGenerales.OperacionesClientes.obtenerClasificacionFacturas(); });
+        app.MapGet("/clientes/existe", (string idcliente ) => { return UtilesGenerales.OperacionesClientes.existeCliente(idcliente); });
 
     }
 
