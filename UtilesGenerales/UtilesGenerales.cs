@@ -24,6 +24,16 @@ namespace UtilesGenerales
 
     public static class OperacionesClientes
     {
+
+        public static bool solicitarIncluirNuevoCliente(VMDatosClientes cliente)
+        {
+            var resultado = true;
+
+
+
+            return resultado;
+        }
+
         public static bool introducirNuevoCliente(VMDatosClientes cliente)
         {
             var resultado = true;
